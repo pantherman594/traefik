@@ -174,10 +174,10 @@ WriteTimeout is the maximum duration before timing out writes of the response. I
 `TRAEFIK_ENTRYPOINTS_<NAME>_UDP_TIMEOUT`:  
 Timeout defines how long to wait on an idle session before releasing the related resources. (Default: ```3```)
 
-`TRAEFIK_EXPERIMENTAL_DEVPLUGIN_GOPATH`:  
+`TRAEFIK_EXPERIMENTAL_DEVPLUGINS_<NAME>_GOPATH`:  
 plugin's GOPATH.
 
-`TRAEFIK_EXPERIMENTAL_DEVPLUGIN_MODULENAME`:  
+`TRAEFIK_EXPERIMENTAL_DEVPLUGINS_<NAME>_MODULENAME`:  
 plugin's module name.
 
 `TRAEFIK_EXPERIMENTAL_HTTP3`:  

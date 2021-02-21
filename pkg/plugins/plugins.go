@@ -10,8 +10,8 @@ import (
 )
 
 // Setup setup plugins environment.
-func Setup(client *Client, plugins map[string]Descriptor, devPlugin *DevPlugin) error {
-	err := checkPluginsConfiguration(plugins)
+func Setup(client *Client, plugins map[string]Descriptor, devPlugins map[string]DevPlugin) error {
+	err := checkPluginsConfiguration(plugins, devPlugins)
 	if err != nil {
 		return fmt.Errorf("invalid configuration: %w", err)
 	}
@@ -53,69 +53,19 @@ func Setup(client *Client, plugins map[string]Descriptor, devPlugin *DevPlugin) 
 		}
 	}
 
-	if devPlugin != nil {
-		err := checkDevPluginConfiguration(devPlugin)
-		if err != nil {
-			return fmt.Errorf("invalid configuration: %w", err)
-		}
-	}
-
 	return nil
 }
 
-func checkDevPluginConfiguration(plugin *DevPlugin) error {
-	if plugin == nil {
-		return nil
-	}
-
-	if plugin.GoPath == "" {
-		return errors.New("missing Go Path (prefer a dedicated Go Path)")
-	}
-
-	if plugin.ModuleName == "" {
-		return errors.New("missing module name")
-	}
-
-	m, err := ReadManifest(plugin.GoPath, plugin.ModuleName)
-	if err != nil {
-		return err
-	}
-
-	if m.Type != "middleware" {
-		return errors.New("unsupported type")
-	}
-
-	if m.Import == "" {
-		return errors.New("missing import")
-	}
-
-	if !strings.HasPrefix(m.Import, plugin.ModuleName) {
-		return fmt.Errorf("the import %q must be related to the module name %q", m.Import, plugin.ModuleName)
-	}
-
-	if m.DisplayName == "" {
-		return errors.New("missing DisplayName")
-	}
-
-	if m.Summary == "" {
-		return errors.New("missing Summary")
-	}
-
-	if m.TestData == nil {
-		return errors.New("missing TestData")
-	}
-
-	return nil
-}
-
-func checkPluginsConfiguration(plugins map[string]Descriptor) error {
-	if plugins == nil {
+func checkPluginsConfiguration(plugins map[string]Descriptor, devPlugins map[string]DevPlugin) error {
+	if plugins == nil && devPlugins == nil {
 		return nil
 	}
 
 	uniq := make(map[string]struct{})
+	uniqAlias := make(map[string]struct{})
 
 	var errs []string
+
 	for pAlias, descriptor := range plugins {
 		if descriptor.ModuleName == "" {
 			errs = append(errs, fmt.Sprintf("%s: plugin name is missing", pAlias))
@@ -135,7 +85,77 @@ func checkPluginsConfiguration(plugins map[string]Descriptor) error {
 			continue
 		}
 
+		if _, ok := uniqAlias[pAlias]; ok {
+			errs = append(errs, fmt.Sprintf("only one alias of a plugin is allowed, there is a duplicate of %s", pAlias))
+			continue
+		}
+
 		uniq[descriptor.ModuleName] = struct{}{}
+		uniqAlias[pAlias] = struct{}{}
+	}
+
+	for pAlias, devDescriptor := range devPlugins {
+		if devDescriptor.ModuleName == "" {
+			errs = append(errs, fmt.Sprintf("%s: plugin name is missing", pAlias))
+		}
+
+		if devDescriptor.GoPath == "" {
+			errs = append(errs, fmt.Sprintf("%s: plugin Go Path is missing (prefer a dedicated Go Path)", pAlias))
+		}
+
+		if strings.HasPrefix(devDescriptor.ModuleName, "/") || strings.HasSuffix(devDescriptor.ModuleName, "/") {
+			errs = append(errs, fmt.Sprintf("%s: plugin name should not start or end with a /", pAlias))
+			continue
+		}
+
+		if _, ok := uniq[devDescriptor.ModuleName]; ok {
+			errs = append(errs, fmt.Sprintf("only one version of a plugin is allowed, there is a duplicate of %s", devDescriptor.ModuleName))
+			continue
+		}
+
+		if _, ok := uniqAlias[pAlias]; ok {
+			errs = append(errs, fmt.Sprintf("only one alias of a plugin is allowed, there is a duplicate of %s", pAlias))
+			continue
+		}
+
+		m, err := ReadManifest(devDescriptor.GoPath, devDescriptor.ModuleName)
+		if err != nil {
+			errs = append(errs, err.Error())
+			continue
+		}
+
+		if m.Type != "middleware" {
+			errs = append(errs, fmt.Sprintf("%s: plugin type is unsupported", pAlias))
+			continue
+		}
+
+		if m.Import == "" {
+			errs = append(errs, fmt.Sprintf("%s: plugin is missing import", pAlias))
+			continue
+		}
+
+		if !strings.HasPrefix(m.Import, devDescriptor.ModuleName) {
+			errs = append(errs, fmt.Sprintf("%s: the import %q must be related to the module name %q", pAlias, m.Import, devDescriptor.ModuleName))
+			continue
+		}
+
+		if m.DisplayName == "" {
+			errs = append(errs, fmt.Sprintf("%s: plugin is missing display name", pAlias))
+			continue
+		}
+
+		if m.Summary == "" {
+			errs = append(errs, fmt.Sprintf("%s: plugin is missing summary", pAlias))
+			continue
+		}
+
+		if m.TestData == nil {
+			errs = append(errs, fmt.Sprintf("%s: plugin is missing test data", pAlias))
+			continue
+		}
+
+		uniq[devDescriptor.ModuleName] = struct{}{}
+		uniqAlias[pAlias] = struct{}{}
 	}
 
 	if len(errs) > 0 {

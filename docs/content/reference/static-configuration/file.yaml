@@ -411,9 +411,13 @@ experimental:
     Descriptor1:
       moduleName: foobar
       version: foobar
-  devPlugin:
-    goPath: foobar
-    moduleName: foobar
+  devPlugins:
+    Descriptor2:
+      goPath: foobar
+      moduleName: foobar
+    Descriptor3:
+      goPath: foobar
+      moduleName: foobar
   http3: true
   kubernetesGateway: true
 

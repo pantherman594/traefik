@@ -174,10 +174,10 @@ WriteTimeout is the maximum duration before timing out writes of the response. I
 `--entrypoints.<name>.udp.timeout`:  
 Timeout defines how long to wait on an idle session before releasing the related resources. (Default: ```3```)
 
-`--experimental.devplugin.gopath`:  
+`--experimental.devplugins.<name>.gopath`:  
 plugin's GOPATH.
 
-`--experimental.devplugin.modulename`:  
+`--experimental.devplugins.<name>.modulename`:  
 plugin's module name.
 
 `--experimental.http3`:  
