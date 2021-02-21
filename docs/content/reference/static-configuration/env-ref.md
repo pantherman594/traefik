@@ -168,10 +168,10 @@ ReadTimeout is the maximum duration for reading the entire request, including th
 `TRAEFIK_ENTRYPOINTS_<NAME>_TRANSPORT_RESPONDINGTIMEOUTS_WRITETIMEOUT`:  
 WriteTimeout is the maximum duration before timing out writes of the response. If zero, no timeout is set. (Default: ```0```)
 
-`TRAEFIK_EXPERIMENTAL_DEVPLUGIN_GOPATH`:  
+`TRAEFIK_EXPERIMENTAL_DEVPLUGINS_<NAME>_GOPATH`:  
 plugin's GOPATH.
 
-`TRAEFIK_EXPERIMENTAL_DEVPLUGIN_MODULENAME`:  
+`TRAEFIK_EXPERIMENTAL_DEVPLUGINS_<NAME>_MODULENAME`:  
 plugin's module name.
 
 `TRAEFIK_EXPERIMENTAL_KUBERNETESGATEWAY`:  

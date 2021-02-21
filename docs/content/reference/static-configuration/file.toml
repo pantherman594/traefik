@@ -388,6 +388,10 @@
     [experimental.plugins.Descriptor1]
       moduleName = "foobar"
       version = "foobar"
-  [experimental.devPlugin]
-    goPath = "foobar"
-    moduleName = "foobar"
+  [experimental.devPlugins]
+    [experimental.devPlugins.Descriptor2]
+      goPath = "foobar"
+      moduleName = "foobar"
+    [experimental.devPlugins.Descriptor3]
+      goPath = "foobar"
+      moduleName = "foobar"

@@ -13,8 +13,6 @@ import (
 	"github.com/traefik/yaegi/stdlib"
 )
 
-const devPluginName = "dev"
-
 // Constructor creates a plugin handler.
 type Constructor func(context.Context, http.Handler) (http.Handler, error)
 
@@ -38,7 +36,7 @@ type Builder struct {
 }
 
 // NewBuilder creates a new Builder.
-func NewBuilder(client *Client, plugins map[string]Descriptor, devPlugin *DevPlugin) (*Builder, error) {
+func NewBuilder(client *Client, plugins map[string]Descriptor, devPlugins map[string]DevPlugin) (*Builder, error) {
 	pb := &Builder{
 		descriptors: map[string]pluginContext{},
 	}
@@ -66,7 +64,7 @@ func NewBuilder(client *Client, plugins map[string]Descriptor, devPlugin *DevPlu
 		}
 	}
 
-	if devPlugin != nil {
+	for pName, devPlugin := range devPlugins {
 		manifest, err := ReadManifest(devPlugin.GoPath, devPlugin.ModuleName)
 		if err != nil {
 			return nil, fmt.Errorf("%s: failed to read manifest: %w", devPlugin.ModuleName, err)
@@ -80,7 +78,7 @@ func NewBuilder(client *Client, plugins map[string]Descriptor, devPlugin *DevPlu
 			return nil, fmt.Errorf("%s: failed to import plugin code %q: %w", devPlugin.ModuleName, manifest.Import, err)
 		}
 
-		pb.descriptors[devPluginName] = pluginContext{
+		pb.descriptors[pName] = pluginContext{
 			interpreter: i,
 			GoPath:      devPlugin.GoPath,
 			Import:      manifest.Import,

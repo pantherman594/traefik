@@ -121,12 +121,6 @@ func runCmd(staticConfiguration *static.Configuration) error {
 
 	ctx := cmd.ContextWithSignal(context.Background())
 
-	if staticConfiguration.Experimental != nil && staticConfiguration.Experimental.DevPlugin != nil {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, 30*time.Minute)
-		defer cancel()
-	}
-
 	if staticConfiguration.Ping != nil {
 		staticConfiguration.Ping.WithContext(ctx)
 	}
