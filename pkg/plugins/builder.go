@@ -11,6 +11,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/traefik/yaegi/interp"
 	"github.com/traefik/yaegi/stdlib"
+	"github.com/traefik/yaegi/stdlib/unsafe"
 )
 
 // Constructor creates a plugin handler.
@@ -51,6 +52,10 @@ func NewBuilder(client *Client, plugins map[string]Descriptor, devPlugins map[st
 		i := interp.New(interp.Options{GoPath: client.GoPath()})
 		i.Use(stdlib.Symbols)
 
+		if desc.AllowUnsafe {
+			i.Use(unsafe.Symbols)
+		}
+
 		_, err = i.Eval(fmt.Sprintf(`import "%s"`, manifest.Import))
 		if err != nil {
 			return nil, fmt.Errorf("%s: failed to import plugin code %q: %w", desc.ModuleName, manifest.Import, err)
@@ -72,6 +77,10 @@ func NewBuilder(client *Client, plugins map[string]Descriptor, devPlugins map[st
 
 		i := interp.New(interp.Options{GoPath: devPlugin.GoPath})
 		i.Use(stdlib.Symbols)
+
+		if devPlugin.AllowUnsafe {
+			i.Use(unsafe.Symbols)
+		}
 
 		_, err = i.Eval(fmt.Sprintf(`import "%s"`, manifest.Import))
 		if err != nil {
