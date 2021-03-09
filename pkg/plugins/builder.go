@@ -54,7 +54,7 @@ func NewBuilder(client *Client, plugins map[string]Descriptor, devPlugins map[st
 
 		if desc.AllowUnsafe {
 			i.Use(unsafe.Symbols)
-			fmt.Printf("Potential security risk: plugin %s is allowed to use unsafe", desc.ModuleName)
+			fmt.Printf("Potential security risk: plugin %s is allowed to use unsafe.\n", desc.ModuleName)
 		}
 
 		_, err = i.Eval(fmt.Sprintf(`import "%s"`, manifest.Import))
@@ -81,7 +81,7 @@ func NewBuilder(client *Client, plugins map[string]Descriptor, devPlugins map[st
 
 		if devPlugin.AllowUnsafe {
 			i.Use(unsafe.Symbols)
-			fmt.Printf("Potential security risk: plugin %s is allowed to use unsafe", devPlugin.ModuleName)
+			fmt.Printf("Potential security risk: plugin %s is allowed to use unsafe.\n", devPlugin.ModuleName)
 		}
 
 		_, err = i.Eval(fmt.Sprintf(`import "%s"`, manifest.Import))

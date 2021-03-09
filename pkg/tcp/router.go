@@ -73,6 +73,15 @@ func (r *Router) ServeTCP(conn WriteCloser) {
 			target.ServeTCP(r.GetConn(conn, peeked))
 			return
 		}
+
+		parts := strings.Split(serverName, ".")
+		if len(parts) > 2 {
+			parts[0] = "*"
+			if target, ok := r.routingTable[strings.Join(parts, ".")]; ok {
+				target.ServeTCP(r.GetConn(conn, peeked))
+				return
+			}
+		}
 	}
 
 	// FIXME Needs tests
