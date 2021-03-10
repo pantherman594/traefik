@@ -74,10 +74,10 @@ func (r *Router) ServeTCP(conn WriteCloser) {
 			return
 		}
 
-		parts := strings.Split(serverName, ".")
-		if len(parts) > 2 {
-			parts[0] = "*"
-			if target, ok := r.routingTable[strings.Join(parts, ".")]; ok {
+		// Replace up to the first . with a * to try wildcard routes
+		parts := strings.SplitN(serverName, ".", 2)
+		if len(parts) == 2 {
+			if target, ok := r.routingTable["*." + parts[1]]; ok {
 				target.ServeTCP(r.GetConn(conn, peeked))
 				return
 			}
