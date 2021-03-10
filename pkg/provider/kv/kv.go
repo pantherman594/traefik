@@ -78,6 +78,14 @@ func (p *Provider) Provide(configurationChan chan<- dynamic.Message, pool *safe.
 		return fmt.Errorf("cannot connect to KV server: %w", err)
 	}
 
+	if rootExists, _ := p.kvClient.Exists(p.RootKey, nil); !rootExists {
+		if err := p.kvClient.Put(p.RootKey, []byte("0"), nil); err != nil {
+			logger.Errorf("Failed to create key: %v", err)
+		} else {
+			logger.Infof("Created root key")
+		}
+	}
+
 	configuration, err := p.buildConfiguration()
 	if err != nil {
 		logger.Errorf("Cannot build the configuration: %v", err)
