@@ -216,6 +216,10 @@ func setupServer(staticConfiguration *static.Configuration) (*server.Server, err
 		})
 	}
 
+	if staticConfiguration.Pilot != nil {
+		version.PilotEnabled = staticConfiguration.Pilot.Dashboard
+	}
+
 	// Plugins
 
 	pluginBuilder, err := createPluginBuilder(staticConfiguration)
