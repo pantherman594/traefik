@@ -529,8 +529,8 @@ func loadService(client Client, namespace string, backend networkingv1beta1.Ingr
 		return nil, errors.New("subset not found")
 	}
 
-	var port int32
 	for _, subset := range endpoints.Subsets {
+		var port int32
 		for _, p := range subset.Ports {
 			if portName == p.Name {
 				port = p.Port
@@ -539,7 +539,7 @@ func loadService(client Client, namespace string, backend networkingv1beta1.Ingr
 		}
 
 		if port == 0 {
-			return nil, errors.New("cannot define a port")
+			continue
 		}
 
 		protocol := getProtocol(portSpec, portName, svcConfig)
@@ -551,6 +551,10 @@ func loadService(client Client, namespace string, backend networkingv1beta1.Ingr
 				URL: fmt.Sprintf("%s://%s", protocol, hostPort),
 			})
 		}
+	}
+
+	if len(svc.LoadBalancer.Servers) == 0 {
+		return nil, errors.New("no valid subset found")
 	}
 
 	return svc, nil
