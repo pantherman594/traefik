@@ -1,3 +1,18 @@
+## [v2.4.13](https://github.com/traefik/traefik/tree/v2.4.13) (2021-07-30)
+[All Commits](https://github.com/traefik/traefik/compare/v2.4.12...v2.4.13)
+
+**Bug fixes:**
+- **[authentication,middleware]** Remove hop-by-hop headers define in connection header beore some middleware ([#8319](https://github.com/traefik/traefik/pull/8319) by [ldez](https://github.com/ldez))
+
+## [v2.4.12](https://github.com/traefik/traefik/tree/v2.4.12) (2021-07-26)
+[All Commits](https://github.com/traefik/traefik/compare/v2.4.11...v2.4.12)
+
+**Bug fixes:**
+- **[k8s,k8s/ingress]** Get Kubernetes server version early ([#8286](https://github.com/traefik/traefik/pull/8286) by [rtribotte](https://github.com/rtribotte))
+- **[k8s,k8s/ingress]** Don&#39;t remove ingress config on API call failure ([#8185](https://github.com/traefik/traefik/pull/8185) by [dtomcej](https://github.com/dtomcej))
+- **[middleware]** Ratelimiter: use correct ttlSeconds value, and always call Set ([#8254](https://github.com/traefik/traefik/pull/8254) by [mpl](https://github.com/mpl))
+- **[tls]** Check if defaultcertificate is defined in store ([#8274](https://github.com/traefik/traefik/pull/8274) by [dtomcej](https://github.com/dtomcej))
+
 ## [v2.4.11](https://github.com/traefik/traefik/tree/v2.4.11) (2021-07-15)
 [All Commits](https://github.com/traefik/traefik/compare/v2.4.9...v2.4.11)
 
